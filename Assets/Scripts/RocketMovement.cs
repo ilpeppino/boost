@@ -14,9 +14,9 @@ public class RocketMovement : MonoBehaviour
 
     #region Local variables
 
-    [SerializeField] float pushForce = 500f;
-    [SerializeField] float pushRotation = 10f;
-    private Vector3 rotation, thrust;
+    [SerializeField] float thrustForce = 500f;
+    [SerializeField] float rotationForce = 10f;
+    private Vector3 _rotation, _thrust;
 
     #endregion
 
@@ -39,14 +39,14 @@ public class RocketMovement : MonoBehaviour
     private void Thrust()
     {
         
-        thrust = new Vector3(0f, Input.GetAxis("Fire1"), 0f);
-        rb.AddRelativeForce(thrust * pushForce * Time.deltaTime);
+        _thrust = new Vector3(0f, Input.GetAxis("Fire1"), 0f);
+        rb.AddRelativeForce(_thrust * thrustForce * Time.deltaTime);
 
     }
 
     private void PlayAudio()
     {
-        if (thrust == Vector3.zero)
+        if (_thrust == Vector3.zero)
         {
             if (audioSource.isPlaying)
             {
@@ -67,10 +67,23 @@ public class RocketMovement : MonoBehaviour
     private void Rotate()
     {
         rb.freezeRotation = true;
-        rotation = new Vector3(0f, 0f, -Input.GetAxis("Horizontal"));
-        transform.Rotate(rotation * pushRotation * Time.deltaTime);
+        _rotation = new Vector3(0f, 0f, -Input.GetAxis("Horizontal"));
+        transform.Rotate(_rotation * rotationForce * Time.deltaTime);
         rb.freezeRotation = false;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        switch (collision.gameObject.tag)
+        {
+            case "Friendly":
+                break;
+
+            case "Obstacle":
+                print("Game over");
+                break;
+        }
+    }
 
 }

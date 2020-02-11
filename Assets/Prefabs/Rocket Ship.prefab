@@ -418,8 +418,8 @@ Rigidbody:
   m_GameObject: {fileID: 956688543491701828}
   serializedVersion: 2
   m_Mass: 0.1
-  m_Drag: 0.2
-  m_AngularDrag: 0.05
+  m_Drag: 0.5
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -437,7 +437,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce5532f42eed2384faa66216a8e91d48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushForce: 100
+  thrustForce: 150
+  rotationForce: 100
 --- !u!82 &2121199922
 AudioSource:
   m_ObjectHideFlags: 0
