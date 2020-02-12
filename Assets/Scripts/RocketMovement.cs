@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RocketMovement : MonoBehaviour
 {
@@ -17,22 +15,37 @@ public class RocketMovement : MonoBehaviour
     [SerializeField] float thrustForce = 500f;
     [SerializeField] float rotationForce = 10f;
     private Vector3 _rotation, _thrust;
+    private float _transitionTimeScenes;
+    private State _currentState;
+
+    private enum State
+    {
+        Alive,
+        Dying,
+        Transcending
+    }
+
 
     #endregion
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+
+        _transitionTimeScenes = 2f;
+        _currentState = State.Alive;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
-        PlayAudio();
+        if (_currentState == State.Alive)
+        {
+            Thrust();
+            Rotate();
+            PlayAudio();
+        }
+        
 
     }
 
@@ -44,6 +57,7 @@ public class RocketMovement : MonoBehaviour
 
     }
 
+    // TODO create and move this function to AudioManager class
     private void PlayAudio()
     {
         if (_thrust == Vector3.zero)
@@ -72,18 +86,44 @@ public class RocketMovement : MonoBehaviour
         rb.freezeRotation = false;
     }
 
+    // TODO create a CollisionManager class
     private void OnCollisionEnter(Collision collision)
     {
+        if (_currentState != State.Alive)
+        {
+            return;
+        }
 
         switch (collision.gameObject.tag)
         {
+
             case "Friendly":
+                print("Friendly");
+                break;
+                
+            case "Launchpad":
+                print("Launchpad");
                 break;
 
+            case "Finish":
+                Invoke("LoadNextScene", _transitionTimeScenes);
+                _currentState = State.Transcending;
+                break;
             case "Obstacle":
-                print("Game over");
+                _currentState = State.Dying;
+                Invoke("RestartGame", _transitionTimeScenes);
                 break;
         }
     }
 
+    private void LoadNextScene()
+    {
+        //SceneManager.LoadScene(1);
+        print("Passing level");
+    }
+
+    private void RestartGame()
+    {
+        print("Game Over");
+    }
 }
