@@ -10,10 +10,22 @@ public class RocketMovement : MonoBehaviour
 
     #endregion
 
-    #region Local variables
+    #region Serialized fields
 
     [SerializeField] float thrustForce = 500f;
     [SerializeField] float rotationForce = 10f;
+
+    [SerializeField] AudioClip _aud_Thrust;
+    [SerializeField] AudioClip _aud_Success;
+    [SerializeField] AudioClip _aud_Death;
+
+    [SerializeField] ParticleSystem _vfx_Thrust;
+    [SerializeField] ParticleSystem _prt_Success;
+    [SerializeField] ParticleSystem _prt_Death;
+    #endregion
+
+    #region Local variables
+
     private Vector3 _rotation, _thrust;
     private float _transitionTimeScenes;
     private State _currentState;
@@ -35,6 +47,9 @@ public class RocketMovement : MonoBehaviour
 
         _transitionTimeScenes = 2f;
         _currentState = State.Alive;
+
+        
+
     }
 
     void Update()
@@ -43,7 +58,7 @@ public class RocketMovement : MonoBehaviour
         {
             Thrust();
             Rotate();
-            PlayAudio();
+            ApplyEffects();
         }
         
 
@@ -54,28 +69,38 @@ public class RocketMovement : MonoBehaviour
         
         _thrust = new Vector3(0f, Input.GetAxis("Fire1"), 0f);
         rb.AddRelativeForce(_thrust * thrustForce * Time.deltaTime);
+        
+        
 
     }
 
     // TODO create and move this function to AudioManager class
-    private void PlayAudio()
+    private void ApplyEffects()
     {
         if (_thrust == Vector3.zero)
         {
+
+            _vfx_Thrust.Stop();
+
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
+                
             }
         }
         else
         {
+            _vfx_Thrust.Play();
+
             if (!audioSource.isPlaying)
             {
-                audioSource.Play();
+                audioSource.PlayOneShot(_aud_Thrust);
             }
 
         }
-        
+
+        Debug.Log("Particle playing? " + _vfx_Thrust.isPlaying);
+
     }
 
     private void Rotate()
@@ -107,10 +132,12 @@ public class RocketMovement : MonoBehaviour
 
             case "Finish":
                 Invoke("LoadNextScene", _transitionTimeScenes);
+                audioSource.PlayOneShot(_aud_Success);
                 _currentState = State.Transcending;
                 break;
             case "Obstacle":
                 _currentState = State.Dying;
+                audioSource.PlayOneShot(_aud_Death);
                 Invoke("RestartGame", _transitionTimeScenes);
                 break;
         }
