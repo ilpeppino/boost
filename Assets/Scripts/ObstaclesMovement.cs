@@ -15,10 +15,13 @@ public class ObstaclesMovement : MonoBehaviour
 
     [SerializeField] private float _periodOscillation = 3f;
     private float _cyclesOscillation;
-
+    private Vector3 _initialPosition;
     private const float tau = Mathf.PI * 2;
 
-
+    private void Start()
+    {
+        _initialPosition = transform.position;
+    }
 
 
     void Update()
@@ -28,10 +31,11 @@ public class ObstaclesMovement : MonoBehaviour
 
         // One cycle starts at 0, peaks at 1 at 1/2pi, goes to 0 at pi, peaks -1 at 3/2pi and goes to 0 to 2pi
         x_Oscillation = Mathf.Sin(_cyclesOscillation * tau) * x_Amplitude;
+        //x_Oscillation = Mathf.Sin(_cyclesOscillation) * x_Amplitude;
 
         transform.position = new Vector3(
-            transform.position.x + x_Oscillation, 
-            transform.position.y, 
-            transform.position.z);
+            _initialPosition.x + x_Oscillation, 
+            _initialPosition.y, 
+            _initialPosition.z);
     }
 }
