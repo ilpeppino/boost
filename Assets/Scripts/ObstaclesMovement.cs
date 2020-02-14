@@ -26,6 +26,11 @@ public class ObstaclesMovement : MonoBehaviour
 
     void Update()
     {
+        // Check if period is zero
+        if (_periodOscillation <= Mathf.Epsilon)
+        {
+            return;
+        }
 
         _cyclesOscillation = Time.time / _periodOscillation;
 
