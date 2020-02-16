@@ -20,8 +20,8 @@ public class RocketMovement : MonoBehaviour
     [SerializeField] AudioClip _aud_Death;
 
     [SerializeField] ParticleSystem _vfx_Thrust;
-    [SerializeField] ParticleSystem _prt_Success;
-    [SerializeField] ParticleSystem _prt_Death;
+    [SerializeField] ParticleSystem _vfx_Success;
+    [SerializeField] ParticleSystem _vfx_Death;
     #endregion
 
     #region Local variables
@@ -99,8 +99,6 @@ public class RocketMovement : MonoBehaviour
 
         }
 
-        Debug.Log("Particle playing? " + _vfx_Thrust.isPlaying);
-
     }
 
     private void Rotate()
@@ -134,10 +132,14 @@ public class RocketMovement : MonoBehaviour
                 Invoke("LoadNextScene", _transitionTimeScenes);
                 audioSource.PlayOneShot(_aud_Success);
                 _currentState = State.Transcending;
+                _vfx_Success.Play();
+                Debug.Log("Finish");
                 break;
             case "Obstacle":
                 _currentState = State.Dying;
                 audioSource.PlayOneShot(_aud_Death);
+                Debug.Log("Dead");
+                _vfx_Death.Play();
                 Invoke("RestartGame", _transitionTimeScenes);
                 break;
         }
@@ -152,5 +154,6 @@ public class RocketMovement : MonoBehaviour
     private void RestartGame()
     {
         print("Game Over");
+        SceneManager.LoadScene(0);
     }
 }
