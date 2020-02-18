@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class RocketMovement : MonoBehaviour
@@ -36,6 +37,8 @@ public class RocketMovement : MonoBehaviour
         Dying,
         Transcending
     }
+
+
 
 
     #endregion
@@ -136,14 +139,21 @@ public class RocketMovement : MonoBehaviour
                 Debug.Log("Finish");
                 break;
             case "Obstacle":
-                _currentState = State.Dying;
                 audioSource.PlayOneShot(_aud_Death);
                 Debug.Log("Dead");
                 _vfx_Death.Play();
-                Invoke("RestartGame", _transitionTimeScenes);
+                //gameObject.SetActive(false);
+                print("Game Over");
+                //SceneManager.LoadScene(0);
+                _currentState = State.Dying;
+                Destroy(gameObject, _aud_Death.length - 1f);
+                //StartCoroutine("RestartGame");
                 break;
         }
     }
+
+
+
 
     private void LoadNextScene()
     {
@@ -151,9 +161,10 @@ public class RocketMovement : MonoBehaviour
         print("Passing level");
     }
 
-    private void RestartGame()
-    {
-        print("Game Over");
-        SceneManager.LoadScene(0);
+    private IEnumerator RestartGame() { 
+
+
+
+        yield return new WaitForSeconds(5f);
     }
 }
